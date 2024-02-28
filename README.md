@@ -4,4 +4,4 @@
 
 Quyida dastur ishlashi haqida bilib olishingiz mumkin :   
 
-![demo][demo.gif]
+![demo][ConsoleApp3/demo.gif]
