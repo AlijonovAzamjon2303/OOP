@@ -4,4 +4,4 @@
 
 Quyida dastur ishlashi haqida bilib olishingiz mumkin :   
 
-![demo][ConsoleApp3/demo.gif]
+![demo][https://github.com/AlijonovAzamjon2303/OOP/blob/master/ConsoleApp3/demo.gif]
