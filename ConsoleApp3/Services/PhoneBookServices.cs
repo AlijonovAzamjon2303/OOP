@@ -1,98 +1,97 @@
-﻿using ConsoleApp3.Models;
+﻿using ConsoleApp3.IModels;
+using ConsoleApp3.IServices;
+using ConsoleApp3.Models;
+using System.Net;
 
 namespace ConsoleApp3.Services
 {
-    internal class PhoneBookServices
+    internal class PhoneBookServices : IPhoneBookServices
     {
-        PhoneBook[] phoneBooks;
+        string path = "C:/Users/alijo/Desktop/New/base.txt";
 
-        int count = 0;
-        public int Count 
-        {
-           get => count;
-        }
-        private int id = 1;
+
+        IPhoneBook[] phoneBooks;
+
         public PhoneBookServices(int n)
         {
             phoneBooks = new PhoneBook[n];  
         }
 
-        public void AddPhoneBook(PhoneBook phoneBook)
+        public void AddPhoneBook(IPhoneBook phoneBook)
         {
-            count++;
-            phoneBook.Id = id++;
-            for(int iteration = 0; iteration < phoneBooks.Length; iteration++)
+            string data = phoneBook.ToString();
+            string allData = File.ReadAllText(path);
+            if(allData != "") 
             {
-                if (phoneBooks[iteration] == null) 
-                {
-                    phoneBooks[iteration] = phoneBook;
-                    break;
-                }
+                File.WriteAllText(path, allData + "\n" + data);
+            }
+            else
+            {
+                File.WriteAllText(path, data);
             }
         }
 
         public void ReadAllPhoneBooks()
         {
-            for(int i = 0; i < phoneBooks.Length; i++)
+            string [] allLines = File.ReadAllLines(path);
+            foreach (string line in allLines)
             {
-                if (phoneBooks[i] != null)
-                {
-                    Console.WriteLine($"{phoneBooks[i].Name} : {phoneBooks[i].PhoneNumber}");    
-                }
+                Console.WriteLine(line);
             }
         }
 
         public void ReadById(int id)
         {
             Console.Clear();
-            for(int i = 0; i < phoneBooks.Length; i++)
+            string [] allLines = File.ReadAllLines(path);
+            for(int i = 0; i < allLines.Length; i++)
             {
-                if (phoneBooks[i] != null && phoneBooks[i].Id == id)
-                {  
-                    Console.WriteLine($"{phoneBooks[i].Name} : {phoneBooks[i].PhoneNumber}");
+                PhoneBook phoneBook = new PhoneBook();
+                string[] data = allLines[i].Split();
+                phoneBook.Id = int.Parse(data[0]);
+                phoneBook.Name = data[1];
+                phoneBook.PhoneNumber = data[2];
+
+                if(phoneBook.Id == id)
+                {
+                    Console.WriteLine(allLines[i]);
                 }
             }
         }
 
         public void DeletedById(int id)
         {
-            bool isDeleted = false;
-            for(int i = 0; i < phoneBooks.Length; i++) 
+            string []allLines = File.ReadAllLines(path);
+            File.WriteAllText(path, String.Empty);
+            for(int i = 0; i < allLines.Length;i++)
             {
-                if (phoneBooks[i] != null && phoneBooks[i].Id == id)
-                {
-                    phoneBooks[i] = null;
-                    isDeleted = true;   
-                    count--;
-                }
-            }
+                string []data = allLines[i].Split();
+                PhoneBook phoneBook = new PhoneBook();
+                phoneBook.Id = int.Parse(data[0]);
+                phoneBook.Name = data[1];
+                phoneBook.PhoneNumber = data[2];
 
-            if(isDeleted)
-            {
-                Console.WriteLine($"{id} idli mijoz o'chirildi!");
-            }
-        }
-
-        public void UpdateById(int id, PhoneBook newPhoneBook)
-        {
-            for(int i = 0; i < phoneBooks.Length; i++)
-            {
-                if (phoneBooks[i] != null && phoneBooks[i].Id == id)
+                if (phoneBook.Id != id)
                 {
-                    phoneBooks[i] = newPhoneBook;
+                    this.AddPhoneBook(phoneBook);    
                 }
             }
         }
 
-        public void PrintMenu()
+        public void UpdateById(int id, IPhoneBook newPhoneBook)
         {
-            Console.WriteLine();
-            Console.WriteLine("1. ReadAllPhoneBooks");
-            Console.WriteLine("2. AddPhoneBook");
-            Console.WriteLine("3. ReadById");
-            Console.WriteLine("4. DeleteById");
-            Console.WriteLine("5. UpdateById");
-            Console.WriteLine("0. Dasturni tugatish");
+            string[] allLines = File.ReadAllLines(path);
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                string[] data = allLines[i].Split();
+                if (int.Parse(data[0]) == id)
+                {
+                    allLines[i] = newPhoneBook.ToString();
+                    break;
+                }
+            }
+            File.WriteAllText(path, string.Empty);
+            File.WriteAllLines(path, allLines);
         }
 
         public bool Contains(int id)

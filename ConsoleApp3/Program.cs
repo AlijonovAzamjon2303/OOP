@@ -1,16 +1,16 @@
-﻿using ConsoleApp3.Models;
+﻿using ConsoleApp3.IServices;
+using ConsoleApp3.Models;
 using ConsoleApp3.Services;
-using System.Runtime.CompilerServices;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        PhoneBookServices phoneBookServices = new PhoneBookServices(10);
+        IPhoneBookServices phoneBookServices = new PhoneBookServices(10);
         string input = "";
         do
         {
-            phoneBookServices.PrintMenu();
+            PrintMenu();
 
             input = Console.ReadLine(); 
             switch(input)
@@ -19,10 +19,6 @@ internal class Program
                     {
                         Console.Clear();    
                         phoneBookServices.ReadAllPhoneBooks();
-                        if(phoneBookServices.Count == 0)
-                        {
-                            Console.WriteLine("Bizda hali ro'yxat shakllanmagan!");
-                        }
                     }
                     break;
                 
@@ -30,6 +26,7 @@ internal class Program
                     {
                         Console.Clear();
                         PhoneBook phoneBook = new PhoneBook();
+                        Console.Write("Id = "); phoneBook.Id = int.Parse(Console.ReadLine());   
                         Console.Write("Ism va familiya : "); phoneBook.Name = Console.ReadLine();
                         Console.Write("Telefon raqam : "); phoneBook.PhoneNumber = Console.ReadLine();
 
@@ -41,15 +38,7 @@ internal class Program
                         Console.Clear();
                         Console.Write("Id = ");
                         int n = int.Parse(Console.ReadLine());
-                        
-                        if(phoneBookServices.Contains(n))
-                        {
-                            phoneBookServices.ReadById(n);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{n} id li mijoz topilmadi!");
-                        }
+                        phoneBookServices.ReadById(n);
                     }
                     break;
                 case "4":
@@ -58,14 +47,7 @@ internal class Program
                         Console.Write("O'chirmoqchi bo'lgan mijoz Id = ");
                         int n = int.Parse(Console.ReadLine());
 
-                        if(phoneBookServices.Contains(n))
-                        {
-                            phoneBookServices.DeletedById(n);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{n} id li mijoz topilmadi!");
-                        }
+                        phoneBookServices.DeletedById(n);
                     }
                     break;
                 case "5":
@@ -78,18 +60,11 @@ internal class Program
                         Console.WriteLine("Avvalgi ma'lumotlari : ");
                         phoneBookServices.ReadById(id);
                         
-                        if(phoneBookServices.Contains(id))
-                        {
                             Console.Write("\nYangi ismi : ");
                             newPhoneBook.Name = Console.ReadLine();
                             Console.Write("\nYangi nomeri : ");
                             newPhoneBook.PhoneNumber = Console.ReadLine();
                             newPhoneBook.Id = id;
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{id} idli mijoz topilmadi!");
-                        }
 
                         phoneBookServices.UpdateById(id, newPhoneBook);
                     }
@@ -97,5 +72,16 @@ internal class Program
             }
 
         } while (input != "0");
+    }
+
+    public static void PrintMenu()
+    {
+        Console.WriteLine();
+        Console.WriteLine("1. ReadAllPhoneBooks");
+        Console.WriteLine("2. AddPhoneBook");
+        Console.WriteLine("3. ReadById");
+        Console.WriteLine("4. DeleteById");
+        Console.WriteLine("5. UpdateById");
+        Console.WriteLine("0. Dasturni tugatish");
     }
 }
